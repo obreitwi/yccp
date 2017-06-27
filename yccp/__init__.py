@@ -17,7 +17,7 @@ from .cache import load_data_verbatim
 from .cache import load_data_with_cache
 
 from .version import __version__
-from .utils import dump, get_recursively, set_recursively
+from .utils import dump, get_recursive, set_recursive
 
 
 def load(obj, verbatim=False, **kwargs):
@@ -41,5 +41,5 @@ def load(obj, verbatim=False, **kwargs):
         return load_data_with_cache(obj, **kwargs)
 
 
-rget = get_recursively
-rset = set_recursively
+rget = get_recursive
+rset = set_recursive

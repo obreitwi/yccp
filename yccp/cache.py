@@ -49,16 +49,25 @@ class ExpressionEvaluatorWithCache(object):
         def __getattr__(self, name):
             return self._data[name]
 
+        def dump(self, dct):
+            dct.update(self._data)
+
     def __init__(self):
         # control whether we actually evaluate or
         self.evaluate = True
         self.cache_empty()
 
-    def cache_empty(self):
-        self.cache = self.Cache()
-
     def cache_add(self, name, value):
         self.cache.add(name, value)
+
+    def cache_dump(self, dct):
+        """
+            Dump all contents into the given dictionary.
+        """
+        self.cache.dump(dct)
+
+    def cache_empty(self):
+        self.cache = self.Cache()
 
     def enable(self):
         self.evaluate = True
@@ -134,10 +143,12 @@ def load_data_with_cache(obj, cache_attr="cache", **kwargs):
         obj.seek(filepos)
 
     final_object = load(obj, **kwargs)
-    evaluate_expression.cache_empty()
-
     if cache_attr in raw_object:
         del final_object[cache_attr]
+
+    final_object[cache_attr] = cache = {}
+    evaluate_expression.cache_dump(cache)
+    evaluate_expression.cache_empty()
 
     return final_object
 

@@ -41,16 +41,18 @@ def dump(data, stream=None, **kw):
 # convenience functions to retrieve data from deep dicts #
 ##########################################################
 
-def get_recursive(base, path, sep="/"):
+def get_recursive(base, path, default=None, sep="/"):
     """
-        For every name in path seperated by `sep`, a new dictionary with that
-        name will be created if `create==True`.
+        For every name in path seperated by `sep`.
 
         If the name is a number it will descend into that element of the list.
 
-        If the path is found it will be returned, otherwise None.
+        If the path is found it will be returned, otherwise `default`.
     """
-    return retrieve_path(base, path, sep, create=False)
+    retval = retrieve_path(base, path, sep, create=False)
+    if retval is None:
+        retval = default
+    return retval
 
 
 def set_recursive(base, path, value, sep="/"):
