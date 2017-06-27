@@ -6,7 +6,9 @@ __all__ = [
         "RawExpression",
         "__version__"
         "dump",
+        "rget",
         "load",
+        "rset",
     ]
 
 from .cache import RawCacheEntry
@@ -15,7 +17,7 @@ from .cache import load_data_verbatim
 from .cache import load_data_with_cache
 
 from .version import __version__
-from .utils import dump
+from .utils import dump, get_recursively, set_recursively
 
 
 def load(obj, verbatim=False, **kwargs):
@@ -37,3 +39,7 @@ def load(obj, verbatim=False, **kwargs):
         return load_data_verbatim(obj, **kwargs)
     else:
         return load_data_with_cache(obj, **kwargs)
+
+
+rget = get_recursively
+rset = set_recursively
