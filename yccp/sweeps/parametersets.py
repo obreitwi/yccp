@@ -81,14 +81,11 @@ class ParameterSet(object):
         if not filename.endswith(".yaml"):
             filename += ".yaml"
 
-        with open(filename, "w") as f:
-            c.dump(self.data, stream=f)
-
         folder = osp.dirname(filename)
         if not osp.isdir(folder):
-            log.info("Creating folder: {}".format(self.prms["folder"]))
+            log.info("Creating folder: {}".format(folder))
             os.makedirs(folder)
 
-        return filename
-
+        with open(filename, "w") as f:
+            c.dump(self.data, stream=f)
 

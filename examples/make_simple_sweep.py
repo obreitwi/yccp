@@ -58,6 +58,6 @@ if __name__ == "__main__":
             value_format="d"),
     )
 
-    sweep.dump(paramset, basefolder=DIRNAME, write_files=False)
+    sweep.dump(paramset, basefolder=DIRNAME, write_files=True)
 
 
