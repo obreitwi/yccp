@@ -2,46 +2,19 @@
 # encoding: utf-8
 
 __all__ = [
-    "YamlLoader",
-    "YamlDumper",
-    "load",
-    "dump",
     "get_recursive",
     "set_recursive",
+    "update_dict_recursively",
+    "chain_generator_functions",
 ]
 
-import yaml
-
-# if available, load c-based implementaiton
-try:
-    from yaml import CLoader as YamlLoader, CDumper as YamlDumper
-except ImportError:
-    from yaml import Loader as YamlLoader, Dumper as YamlDumper
-
-
-####################################################
-# convenience functions to load/dump with our tags #
-####################################################
-
-
-def load(obj, verbatim=False, name_cache="cache", **kw):
-    "Load yaml from object."
-    return yaml.load(obj, Loader=YamlLoader, **kw)
-
-
-def dump(data, stream=None, **kw):
-    "Return yaml representation."
-    kwargs = {"default_flow_style": False}
-    kwargs.setdefault("indent", 4)
-    kwargs.update(kw)
-    return yaml.dump(data, stream, Dumper=YamlDumper, **kwargs)
-
+import collections as c
 
 ##########################################################
 # convenience functions to retrieve data from deep dicts #
 ##########################################################
 
-def get_recursive(base, path, default=None, sep="/"):
+def get_recursive(dct, path, default=None, sep="/"):
     """
         For every name in path seperated by `sep`.
 
@@ -49,13 +22,13 @@ def get_recursive(base, path, default=None, sep="/"):
 
         If the path is found it will be returned, otherwise `default`.
     """
-    retval = retrieve_path(base, path, sep, create=False)
+    retval = retrieve_path(dct, path, sep, create=False)
     if retval is None:
         retval = default
     return retval
 
 
-def set_recursive(base, path, value, sep="/"):
+def set_recursive(dct, path, value, sep="/"):
     """
         For every name in path seperated by `sep`, a new dictionary with that
         name will be created.
@@ -72,7 +45,7 @@ def set_recursive(base, path, value, sep="/"):
     split_path = path.split(sep)
     key = split_path[-1]
     path = sep.join(split_path[:-1])
-    container = retrieve_path(base, path, sep, create=True)
+    container = retrieve_path(dct, path, sep, create=True)
     if container is not None:
         if key.isdigit():
             idx = int(key)
@@ -92,7 +65,7 @@ def set_recursive(base, path, value, sep="/"):
         raise ValueError("Did not find path {}".format(path))
 
 
-def retrieve_path(base, path, sep="/", create=False):
+def retrieve_path(dct, path, sep="/", create=False):
     """
         For every name in path seperated by `sep`, a new dictionary with that
         name will be created if `create==True`.
@@ -106,8 +79,8 @@ def retrieve_path(base, path, sep="/", create=False):
         If the path is found it will be returned, otherwise None.
     """
     if path is None or path == "/" or path == "":
-        return base
-    current = base
+        return dct
+    current = dct
     completed_names = []
     split_path = path.split(sep)
     for i, name in enumerate(split_path):
@@ -142,4 +115,52 @@ def retrieve_path(base, path, sep="/", create=False):
         completed_names.append(name)
     return current
 
+
+##########################################################
+# regular convenience functions                          #
+##########################################################
+
+def update_dict_recursively(d, u):
+    """
+        Dictionary d with the contents from u in recursive manner.
+    """
+    for k, v in copy.deepcopy(u).iteritems():
+        if isinstance(v, c.Mapping):
+            if k in d and not isinstance(d.get(k), c.Mapping):
+                raise ValueError(
+                        "Only dictionaries should be updated recursively")
+            d[k] = update_dict_recursively(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
+
+
+def chain_generator_functions(generator_functions):
+    """
+        Takes a list of functions that take one value and return generators and
+        successively applies them.
+
+        Returns a single generator over all generators returned by the
+        generator_functions for all inputs.
+
+        Note: This function currently does NOT check if the generators modify
+        an item inplace!
+    """
+    def chained(start_value):
+        generators = [generator_functions[0](start_value)]
+
+        while len(generators) > 0:
+            try:
+                value = generators[-1].next()
+
+                if len(generators) < len(generator_functions):
+                    generators.append(
+                            generator_functions[len(generators)](value))
+
+                else:
+                    yield value
+
+            except StopIteration:
+                generators.pop()
+    return chained
 

@@ -6,40 +6,22 @@ __all__ = [
         "RawExpression",
         "__version__"
         "dump",
-        "rget",
         "load",
+        "log",
+        "rget",
         "rset",
+        "sweeps",
     ]
 
 from .cache import RawCacheEntry
 from .cache import RawExpression
-from .cache import load_data_verbatim
-from .cache import load_data_with_cache
+from .cache import dump
+from .cache import load
 
+from . import sweeps
+
+from .logcfg import log
+from .utils import get_recursive as rget
+from .utils import set_recursive as rset
 from .version import __version__
-from .utils import dump, get_recursive, set_recursive
 
-
-def load(obj, verbatim=False, **kwargs):
-    """
-        Load a yaml with a little preprocessor.
-
-        The toplevel cache-attribute `cache_attr` has to contain a list of
-        value mappings in form of a dictionaries String -> String. The values
-        will be evaluated and stored under their corresponding key in the cache
-        object (shorthand "cc"). Furthermore, the numpy library will be
-        available under the shorthand "np".
-
-        If verbatim is enabled, expressions are not evaluated and instead kept
-        in their raw form RawExpression.
-
-        The object is parsed twice in total.
-    """
-    if verbatim:
-        return load_data_verbatim(obj, **kwargs)
-    else:
-        return load_data_with_cache(obj, **kwargs)
-
-
-rget = get_recursive
-rset = set_recursive

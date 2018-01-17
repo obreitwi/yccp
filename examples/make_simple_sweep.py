@@ -1,0 +1,63 @@
+#!/usr/bin/env python2
+# encoding: utf-8
+
+import yccp
+
+swps = yccp.sweeps
+
+import os
+import os.path as osp
+
+
+DIRNAME = osp.dirname(osp.abspath(__file__))
+
+if __name__ == "__main__":
+    sweep = yccp.sweeps.Sweep()
+
+    paramset = swps.ParameterSet(osp.join(DIRNAME, "simple.yaml"))
+
+    sweep.add(swps.transforms.AddValue(path_to="regularValue", value=5))
+
+    sweep.add(swps.ranges.Range(
+        transforms=[
+                swps.transforms.FactorValue(path_to="nestedValue/foo"),
+                swps.transforms.SetValue(path_to="nestedValue/bar"),
+            ],
+        range_tuples=[
+            (2, 4),
+            (3, 12),
+            (9, 10),
+            (1, -1),
+        ]))
+
+    def custom_generator(paramset):
+        # always make a copy so that the paramset is not modified inplace
+        ps = paramset.copy()
+
+        ps["regularValuePlusOne"] = ps["nestedValue/bar"] + ps["regularValue"]
+        yield ps
+
+        ps["regularValuePlusOne"] = ps["nestedValue/bar"] - ps["regularValue"]
+        yield ps
+
+    sweep.add(custom_generator)
+
+    sweep.add_filter(lambda ps: ps["nestedValue/bar"] > 0)
+
+    sweep.add_namers_folder(
+        swps.namers.create_formatted("nestedValue/foo", "foo",
+            value_format="d"),
+        swps.namers.create_formatted("regularValue", "regular",
+            value_format="d"),
+    )
+
+    sweep.set_namers_file(
+        swps.namers.create_formatted("nestedValue/bar", "bar",
+            value_format="d"),
+        swps.namers.create_formatted("regularValuePlusOne", "ValP1",
+            value_format="d"),
+    )
+
+    sweep.dump(paramset, basefolder=DIRNAME, write_files=False)
+
+

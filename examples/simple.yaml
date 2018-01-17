@@ -1,0 +1,12 @@
+cache:
+    - foo: !ee 1+2 * np.arange(100)
+      bar: 1024
+    - foobar: !ee cc.foo + cc.bar
+
+regularValue: !cc bar
+regularArray: !cc foobar
+regularValuePlusOne: !ee cc.bar + 1
+
+nestedValue:
+    foo: !ee cc.foobar.size
+    bar: !cc bar

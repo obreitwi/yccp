@@ -1,7 +1,0 @@
-cache:
-    - foo: !ee 1+2 * np.arange(100)
-      bar: 1024
-    - foobar: !ee cc.foo + cc.bar
-
-regularValue: !cc foobar
-regularValuePlusOne: !ee cc.foobar + 1
