@@ -17,11 +17,11 @@ class Transform(object):
 
     default_parameters = {}
 
-    def transform(self, paramset):
+    def apply(self, paramset):
         """
             Transform dataset.
         """
-        self.apply(paramset)
+        self.modify(paramset)
         self.record(paramset)
         return paramset
 
@@ -30,7 +30,7 @@ class Transform(object):
         self.apply(new)
         yield new
 
-    def apply(self, paramset):
+    def modify(self, paramset):
         """
             Actually modify the parameter set.
         """
@@ -70,7 +70,7 @@ class SetValue(Transform):
         """
         self.prms["value"] = value
 
-    def apply(self, paramset):
+    def modify(self, paramset):
         _u.set_recursive(paramset.data,
                 self.prms["path_to"], self.prms["value"])
 
@@ -93,7 +93,7 @@ class CopyValue(Transform):
             "path_to" : None,
         }
 
-    def apply(self, paramset):
+    def modify(self, paramset):
         assert self.prms["path_from"] is not None
         assert self.prms["path_to"] is not None
 
@@ -126,7 +126,7 @@ class AddValue(SetValue):
             self.orig_value = _u.get_recursive(paramset.data,
                 self.prms["path_to"])
 
-    def apply(self, paramset):
+    def modify(self, paramset):
         self.get_orig_value(paramset)
         self.final_value = self.orig_value + self.prms["value"]
         _u.set_recursive(paramset.data,
@@ -147,7 +147,7 @@ class FactorValue(AddValue):
         Multiply a single value with a factor.
     """
 
-    def apply(self, paramset):
+    def modify(self, paramset):
         self.get_orig_value(paramset)
 
         self.final_value = self.orig_value * self.prms["value"]
@@ -177,7 +177,7 @@ class DeleteValues(Transform):
             "paths" : [],
         }
 
-    def apply(self, paramset):
+    def modify(self, paramset):
         for path_to in self.prms["paths"]:
             split = path_to.split("/")
             if len(split) > 0:
