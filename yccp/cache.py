@@ -141,7 +141,6 @@ def raw_load(obj, verbatim=False, name_cache="cache", **kw):
     return yaml.load(obj, Loader=YccpLoader, **kw)
 
 
-
 def load_data_with_cache(obj, cache_attr="cache", **kwargs):
     """
         Load a yaml with a little preprocessor.
@@ -152,7 +151,7 @@ def load_data_with_cache(obj, cache_attr="cache", **kwargs):
     except AttributeError:
         pass
 
-    # diable the expression evaluater because the cache is empty
+    # disable the expression evaluater and empty cache
     evaluate_expression.disable()
     evaluate_expression.cache_empty()
 
@@ -161,7 +160,17 @@ def load_data_with_cache(obj, cache_attr="cache", **kwargs):
 
     # compute cache if it exists
     if cache_attr in raw_object:
-        for dct in raw_object[cache_attr]:
+        cache = raw_object[cache_attr]
+
+        if isinstance(cache, dict):
+            cache = [cache]
+        elif not (isinstance(cache, list)
+                and all((isinstance(v, dict) for v in cache))):
+            raise ValueError(
+                "The {} attribute needs to be either a dictionary or a list "
+                "of dictionaries".format(cache_attr))
+
+        for dct in cache:
             for k, v in dct.iteritems():
                 evaluate_expression.cache_add(
                     k, evaluate_expression.eval(v))
