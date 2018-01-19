@@ -79,7 +79,7 @@ class Sweep(object):
         """
         written_filenames = set()
         for count, ps in enumerate(self.generate(paramset)):
-            fn = self.get_filename(ps)
+            fn = self.get_filename(ps, basefolder=basefolder)
 
             if write_files:
                 log.info("Writing: {}".format(fn))

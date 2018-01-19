@@ -66,11 +66,11 @@ class ParameterSet(object):
 
     @property
     def metainfo(self):
-        return self.data.get(["_metainfo"], {})
+        return self.data.get("_metainfo", {})
 
     def setup_metadata(self, orig_file):
         self.data["_metainfo"] = {
-                "basename" : osp.abspath(orig_file),
+                "original_file" : osp.abspath(orig_file),
                 "transforms" : [],
             }
 
