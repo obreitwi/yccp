@@ -181,7 +181,7 @@ def _get_updated_parameters(cls, parameters):
             else:
                 prms[k] = v
         else:
-            warining = "Parameter-Mismatch: "\
+            warning = "Parameter-Mismatch: "\
                 + "`{0}` no parameter of class {1}!".format(
                     k, cls.__name__)
             log.warn(warning)
