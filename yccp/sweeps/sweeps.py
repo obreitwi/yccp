@@ -65,9 +65,11 @@ class Sweep(object):
             n.join(namers, sep=self.filename_component_sep))
 
     def dump(self,
-            paramset,
-            basefolder=None,
-            write_files=True):
+             paramset,
+             basefolder=None,
+             write_files=True,
+             overwrite_files=False,
+             failOnOverwrite=True):
         """
             Generate new ParameterSets from paramset by applying all
             transforms, ranges and filters that were added.
@@ -79,19 +81,26 @@ class Sweep(object):
             ParamaterSets will be generated one by one (useful for test runs).
         """
         written_filenames = set()
+        overwritten_files = set()
         for count, ps in enumerate(self.generate(paramset)):
             fn = self.get_filename(ps, basefolder=basefolder)
 
             if write_files:
                 log.info("Writing: {}".format(fn))
-                ps.write(fn)
+                if 0 == ps.write(fn, overwrite=overwrite_files, failOnOverwrite=failOnOverwrite):
+                    written_filenames.add(fn)
+                else:
+                    overwritten_files.add(fn)
             else:
                 log.info("Would write: {}".format(fn))
+                written_filenames.add(fn)
 
-            written_filenames.add(fn)
-
-        log.info("Wrote {} parameter sets ({} unique names).".format(
-            count+1, len(written_filenames)))
+        log.info("{} {} parameter sets ({} unique names).".format(
+            "Wrote" if write_files else "Would write",
+            count + 1, len(written_filenames)))
+        if write_files:
+            log.info("Name collision for {} files, overwrite set to {}".format(
+                len(overwritten_files), str(overwrite_files)))
 
     def generate(self, paramset):
         for p in u.chain_generator_functions(

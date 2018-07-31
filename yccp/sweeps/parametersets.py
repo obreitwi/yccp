@@ -93,7 +93,7 @@ class ParameterSet(object):
                 "transforms": [],
             }
 
-    def write(self, filename):
+    def write(self, filename, overwrite=False, failOnOverwrite=True):
         """
             Dump data into filename.
         """
@@ -105,5 +105,15 @@ class ParameterSet(object):
             log.info("Creating folder: {}".format(folder))
             os.makedirs(folder)
 
-        with open(filename, "w") as f:
-            pl.dump(self.data, stream=f)
+        if osp.isfile(filename) and not overwrite:
+            log.error(
+                "File {} exists and overwrite was not set to True".format(
+                    filename))
+            if failOnOverwrite:
+                exit()
+            else:
+                return 1
+        else:
+            with open(filename, "w") as f:
+                pl.dump(self.data, stream=f)
+                return 0
