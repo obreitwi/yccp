@@ -168,6 +168,45 @@ class FactorValue(AddValue):
                     " [taken from {}]".format(self.prms["path_from"]))
 
 
+class ApplyFunction(AddValue):
+    """
+    Apply the path_from value to function and save in path_to
+    """
+    default_parameters = {
+        "path_from": None,
+        "path_to": None,
+        "function": None,
+    }
+
+    def modify(self, paramset):
+        assert callable(self.prms['function'])
+        self.get_orig_value(paramset)
+
+        self.final_value = self.prms['function'](self.orig_value)
+        _u.set_recursive(
+            paramset.data,
+            self.prms["path_to"],
+            self.final_value)
+
+    def describe(self, paramset):
+        """
+            Return an object describing the transformation.
+        """
+        assert callable(self.prms['function'])
+        import inspect
+        try:
+            function_name = inspect.getsource(self.prms["function"])
+        except IOError:
+            function_name = "a function"
+        return "applied {} to {} and saved at {} ({} -> {}).".format(
+            function_name,
+            self.prms["path_from"],
+            self.prms["path_to"],
+            self.orig_value,
+            self.final_value,
+        )
+
+
 class DeleteValues(Transform):
     """
         Deletes the selected values from the parameterset.
