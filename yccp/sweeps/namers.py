@@ -18,11 +18,28 @@ __all__ = [
         "join",
     ]
 
+import hashlib
 import logging
 log = logging.getLogger(__name__.split(".")[0])
 
 from .. import utils
 rget = utils.get_recursive
+
+
+def create_custom(listOfPaths, name,
+                  func=lambda lst: hashlib.md5(str(lst)).hexdigest(),
+                  length=0):
+    """Go through the listOfPaths and pass them together to a function given by user."""
+    assert callable(func)
+
+    def namer(paramset):
+        lst = [rget(paramset.data, path) for path in listOfPaths]
+        val = func(lst)
+        val = val[:length] if length > 0 else val
+        return "{}_{}".format(
+            name,
+            val)
+    return namer
 
 
 def create_formatted(path, name, value_format=".0f",
@@ -63,7 +80,8 @@ def create_formatted(path, name, value_format=".0f",
         try:
             return format.format(name=name, value=value)
         except ValueError:
-            log.error("Formatter {} received wrong value.".format(name))
+            log.error("Formatter {} received wrong value {} for value_format {}.".format(
+                name, value, value_format))
             raise
 
     return formatter

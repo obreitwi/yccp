@@ -9,6 +9,7 @@ __all__ = [
 ]
 
 import collections as c
+import copy
 
 ##########################################################
 # convenience functions to retrieve data from deep dicts #
