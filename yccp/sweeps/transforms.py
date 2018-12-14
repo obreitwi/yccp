@@ -207,6 +207,53 @@ class ApplyFunction(AddValue):
         )
 
 
+class ApplyFunctionElaborate(AddValue):
+    """
+    Apply the values of given dict to function and save in path_to
+    """
+    default_parameters = {
+        "dict": {},
+        "path_to": None,
+        "function": None,
+        "orig_values": {},
+    }
+
+    def get_orig_value(self, paramset):
+        self.orig_values = {}
+        for local_key, yaml_key in self.prms['dict'].iteritems():
+            self.orig_values[local_key] = _u.get_recursive(
+                paramset.data,
+                yaml_key)
+
+    def modify(self, paramset):
+        assert callable(self.prms['function'])
+        self.get_orig_value(paramset)
+
+        self.final_value = self.prms['function'](**self.orig_values)
+        _u.set_recursive(
+            paramset.data,
+            self.prms["path_to"],
+            self.final_value)
+
+    def describe(self, paramset):
+        """
+            Return an object describing the transformation.
+        """
+        assert callable(self.prms['function'])
+        import inspect
+        try:
+            function_name = inspect.getsource(self.prms["function"])
+        except IOError:
+            function_name = "a function"
+        return "applied {} to {} and saved at {} ({} -> {}).".format(
+            function_name,
+            self.prms["dict"],
+            self.prms["path_to"],
+            self.orig_values,
+            self.final_value,
+        )
+
+
 class DeleteValues(Transform):
     """
         Deletes the selected values from the parameterset.
