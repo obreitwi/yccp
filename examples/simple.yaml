@@ -1,12 +1,12 @@
-cache:
-    - foo: !ee 1+2 * np.arange(100)
+__prelude__:
+    - foo: !eval 1+2 * np.arange(100)
       bar: 1024
-    - foobar: !ee cc.foo + cc.bar
+    - foobar: !eval get.foo + get.bar
 
-regularValue: !cc bar
-regularArray: !cc foobar
-regularValuePlusOne: !ee cc.bar + 1
+regularValue: !get bar
+regularArray: !get foobar
+regularValuePlusOne: !ee get.bar + 1
 
 nestedValue:
-    foo: !ee cc.foobar.size
-    bar: !cc bar
+    foo: !eval get.foobar.size
+    bar: !get bar

@@ -128,4 +128,3 @@ def main():
             reverse_all=args["--reverse-all"],
             verbose=args["--verbose"]):
         print(filename)
-

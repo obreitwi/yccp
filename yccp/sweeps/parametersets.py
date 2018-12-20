@@ -3,6 +3,10 @@
     ParameterSet and related concepts.
 """
 
+
+from .. import utils as u
+from .. import prelude as pl
+
 import copy
 import os
 import os.path as osp
@@ -10,10 +14,9 @@ import os.path as osp
 import logging
 log = logging.getLogger(__name__.split(".")[0])
 
-from .. import utils as u
-from .. import cache as c
 
 __all__ = ["ParameterSet"]
+
 
 class ParameterSet(object):
     """
@@ -58,7 +61,7 @@ class ParameterSet(object):
         param_filename = base+ext
 
         with open(param_filename, "r") as f:
-            self.data = c.load(f, verbatim=verbatim)
+            self.data = pl.load(f, verbatim=verbatim)
 
         self.setup_metadata(param_filename)
 
@@ -70,8 +73,8 @@ class ParameterSet(object):
 
     def setup_metadata(self, orig_file):
         self.data["_metainfo"] = {
-                "original_file" : osp.abspath(orig_file),
-                "transforms" : [],
+                "original_file": osp.abspath(orig_file),
+                "transforms": [],
             }
 
     def write(self, filename):
@@ -87,5 +90,4 @@ class ParameterSet(object):
             os.makedirs(folder)
 
         with open(filename, "w") as f:
-            c.dump(self.data, stream=f)
-
+            pl.dump(self.data, stream=f)
