@@ -3,15 +3,15 @@
 _Please note: `yccp` is still under active development and not yet considered
 fully stable!_
 
-*Y*AML parameter storage with pre-*C*omputed *C*ommon *P*arameters is a
-library for easy parameter-file handling. It allows for simple computations on
-common parameters which can then be referenced in the rest of the parameter
-file.
+**Y**AML with pre-**C**omputed **C**ommon **P**arameters is a library for easy
+parameter-file handling. It allows for simple computations on common parameters
+which can then be referenced in the rest of the parameter file.
 
 Furthermore, `yccp` provides convenience functions that ease the process of
 generating parameter-files that are still human-readable afterwards.
 The names of every parameter file is generated from pretty-formatted parameter
 values.
+
 
 # Pre-computed common parameters
 
@@ -36,6 +36,7 @@ section.
 The `__prelude__` section represents a list of dictionaries which are evaluated
 in-order (the order of evaluation within a dictionary is undefined!).
 
+
 ## Example
 
 ```yaml
@@ -46,8 +47,8 @@ __prelude__:
     - foobar: !eval get.foo + get.bar
 
 connection_density:
-    from_a_to_b: !eval 0.9  * get.synapse_loss*
-    from_b_to_a: !eval 0.75 * get.synapse_loss*
+    from_a_to_b: !eval 0.9  * get.synapse_loss
+    from_b_to_a: !eval 0.75 * get.synapse_loss
 
 regularValue: !get bar
 regularArray: !get foobar
@@ -58,12 +59,12 @@ nestedValue:
     bar: !get bar
 ```
 
+
 # Generating parameter sweeps
 
 `yccp` provides convenience functions that ease the process of generating
 parameter-files that are still human-readable afterwards.
 
-_TODO: Expand this section__
 
 ## Example
 ```python
@@ -119,8 +120,8 @@ sweep.set_namers_file(
 sweep.dump(paramset, basefolder=DIRNAME, write_files=True)
 ```
 
-# `yccp-sbn`: Sort by numbers
 
+# `yccp-sbn`: Sort by numbers
 ```
 Usage:
     yccp-sbn [-v] [-R] [-f KEY]... [-l KEY]... [-r KEY]... FILENAME...
