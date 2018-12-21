@@ -32,7 +32,8 @@ yccp_tags = {
     "eval": [u"!eval", u"!ee"],
     "get":  [u"!get",  u"!cc"],
 }
-default_prelude_attr = "__prelude__"
+# "__prelude__" used to be called "cache" → keep it for backwards compatability
+default_prelude_attr = ["__prelude__", "cache"]
 
 ####################################################
 # convenience functions to load/dump with our tags #
@@ -162,11 +163,14 @@ def load(obj, verbatim=False, **kwargs):
     """
         Load a yaml with a little preprocessor.
 
-        The toplevel prelude-attribute `prelude_attr` has to contain a list of
+        The toplevel prelude-attribute `name_prelude` has to contain a list of
         value mappings in form of a dictionaries String -> String. The values
         will be evaluated and stored under their corresponding key in the prelude
         object (shorthand "cc"). Furthermore, the numpy library will be
         available under the shorthand "np".
+
+        `name_prelude` can also be a list of attributes that will be tried in
+        order until the first is found.
 
         If verbatim is enabled, expressions are not evaluated and instead kept
         in their raw form RawExpression.
@@ -179,7 +183,7 @@ def load(obj, verbatim=False, **kwargs):
         return load_data_with_prelude(obj, **kwargs)
 
 
-def load_data_verbatim(obj, prelude_attr=None, **kwargs):
+def load_data_verbatim(obj, name_prelude=None, **kwargs):
     """
         Load data from object as is, without evaluating expressions.
     """
@@ -190,7 +194,7 @@ def load_data_verbatim(obj, prelude_attr=None, **kwargs):
     return data
 
 
-def load_data_with_prelude(obj, prelude_attr=default_prelude_attr, **kwargs):
+def load_data_with_prelude(obj, name_prelude=default_prelude_attr, **kwargs):
     """
         Load a yaml with a little preprocessor.
     """
@@ -207,17 +211,24 @@ def load_data_with_prelude(obj, prelude_attr=default_prelude_attr, **kwargs):
     raw_object = raw_load(obj, **kwargs)
     evaluate_expression.enable()
 
-    # compute prelude if it exists
-    if prelude_attr in raw_object:
-        prelude = raw_object[prelude_attr]
+    prelude = None
+    # find prelude under different names
+    if not isinstance(name_prelude, list):
+        name_prelude = [name_prelude]
+    for name_prelude_found in name_prelude:
+        if name_prelude_found in raw_object:
+            prelude = raw_object[name_prelude_found]
+            break
 
+    # compute prelude if it exists
+    if prelude is not None:
         if isinstance(prelude, dict):
             prelude = [prelude]
         elif not (isinstance(prelude, list)
-                and all((isinstance(v, dict) for v in prelude))):
+                  and all((isinstance(v, dict) for v in prelude))):
             raise ValueError(
                 "The {} attribute needs to be either a dictionary or a list "
-                "of dictionaries".format(prelude_attr))
+                "of dictionaries".format(name_prelude_found))
 
         for dct in prelude:
             for k, v in dct.iteritems():
@@ -228,10 +239,10 @@ def load_data_with_prelude(obj, prelude_attr=default_prelude_attr, **kwargs):
         obj.seek(filepos)
 
     final_object = raw_load(obj, **kwargs)
-    if prelude_attr in raw_object:
-        del final_object[prelude_attr]
+    if name_prelude_found in raw_object:
+        del final_object[name_prelude_found]
 
-    final_object[prelude_attr] = prelude = {}
+    final_object[name_prelude_found] = prelude = {}
     evaluate_expression.prelude_dump(prelude)
     evaluate_expression.prelude_empty()
 
