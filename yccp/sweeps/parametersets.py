@@ -26,10 +26,26 @@ class ParameterSet(object):
     def __getitem__(self, key):
         return u.get_recursive(self.data, key)
 
-    def __init__(self, filename=None):
+    def __init__(self, filename=None, verbatim=False):
+        """Create a new dataset.
+
+        Args:
+            filename:
+                If not None, load an existing parameter set (i.e. a YAML-file)
+                from disk.
+
+            verbatim:
+                If True, do not resolve the yccp-specific YAML tags (e.g., !get
+                and !eval). Instead, they will be mapped to regular strings.
+                The parameter set will be loaded as it  is on disk (i.e.,
+                verbatim).
+
+        Returns:
+            The created ParameterSet.
+        """
         self.data = {}
         if filename is not None:
-            self.load(filename)
+            self.load(filename, verbatim=False)
 
     def __setitem__(self, key, value):
         u.set_recursive(self.data, key, value)
