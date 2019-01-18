@@ -17,6 +17,7 @@ from . import transforms as t
 
 __all__ = ["Sweep"]
 
+
 class Sweep(object):
     """
         A sweep is the main object to generate ParameterSets.
@@ -121,4 +122,3 @@ class Sweep(object):
             Add another namer for the filename.
         """
         self.namer_file = n.join(namers, sep=self.filename_component_sep)
-

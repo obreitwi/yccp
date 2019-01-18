@@ -11,17 +11,18 @@ import itertools as it
 
 from .. import utils as u
 
-from . import transforms as t
+from . import transforms as trans
 
 __all__ = ["Range"]
+
 
 class Range(object):
     """
         Define one or more parameter ranges that are swept over.
 
         Transforms and ranges in the same Range-object are swept over
-        simultaneously. If you need the cartesian product of several Ranges
-        then add them seperately to your Sweep.
+        simultaneously. If you need the Cartesian product of several Ranges
+        then add them separately to your Sweep.
     """
 
     def __init__(self, transforms, range_tuples):
@@ -31,7 +32,7 @@ class Range(object):
 
             Tranforms can also be single Transform with accompanying range.
         """
-        if isinstance(transforms, t.Transform):
+        if isinstance(transforms, trans.Transform):
             transforms = [transforms]
             range_tuples = [(tr,) for tr in range_tuples]
 
@@ -42,8 +43,8 @@ class Range(object):
         if any(len(tr) != len(transforms) for tr in range_tuples):
             info = \
                 "Transforms and ranges in the same Range-object are swept "\
-                "over simultaneously. If you need the cartesian product "\
-                "of several Ranges then add them seperately to your Sweep."
+                "over simultaneously. If you need the Cartesian product "\
+                "of several Ranges then add them separately to your Sweep."
             raise ValueError(info)
 
         self.transforms = transforms
@@ -59,5 +60,3 @@ class Range(object):
                 t.apply(p)
 
             yield p
-
-

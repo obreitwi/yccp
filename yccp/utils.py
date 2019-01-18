@@ -163,4 +163,3 @@ def chain_generator_functions(generator_functions):
             except StopIteration:
                 generators.pop()
     return chained
-
