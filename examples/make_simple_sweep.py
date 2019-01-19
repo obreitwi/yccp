@@ -51,6 +51,7 @@ if __name__ == "__main__":
 
         ps["regularValuePlusOne"] = ps["nestedValue/bar"] - ps["regularValue"]
         yield ps
+
     sweep.add(custom_generator)
 
     # We can apply filters (funtions that map parameter sets to bool). Only if

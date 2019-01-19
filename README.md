@@ -63,8 +63,8 @@ nestedValue:
 # Generating parameter sweeps
 
 `yccp` provides convenience functions that ease the process of generating
-parameter-files that are still human-readable afterwards.
-
+parameter-files that are still human-readable afterwards. See the
+[example](examples/make_simple_sweep.py) for details:
 
 ## Example
 ```python
@@ -121,6 +121,7 @@ if __name__ == "__main__":
 
         ps["regularValuePlusOne"] = ps["nestedValue/bar"] - ps["regularValue"]
         yield ps
+
     sweep.add(custom_generator)
 
     # We can apply filters (funtions that map parameter sets to bool). Only if
