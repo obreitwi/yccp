@@ -25,6 +25,10 @@ def get_recursive(dct, path, default=None, sep="/"):
     """
     retval = retrieve_path(dct, path, sep, create=False)
     if retval is None:
+        if default is None:
+            import sys
+            sys.exit("YCCP: Did not find {} in the given document. "
+                     "Skip this by giving sensible (not None) default".format(path))
         retval = default
     return retval
 
