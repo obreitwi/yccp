@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 # encoding: utf-8
 
+import errno
 import inspect
 import itertools as it
 import logging
@@ -87,10 +88,14 @@ class Sweep(object):
 
             if write_files:
                 log.info("Writing: {}".format(fn))
-                if 0 == ps.write(fn, overwrite=overwrite_files, failOnOverwrite=failOnOverwrite):
+                try:
+                    ps.write(fn, overwrite=overwrite_files)
                     written_filenames.add(fn)
-                else:
-                    overwritten_files.add(fn)
+                except OSError as e:
+                    if e.errno == errno.EEXIST and not failOnOverwrite:
+                        overwritten_files.add(fn)
+                    else:
+                        raise
             else:
                 log.info("Would write: {}".format(fn))
                 written_filenames.add(fn)

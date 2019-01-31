@@ -8,6 +8,7 @@ from .. import utils as u
 from .. import prelude as pl
 
 import copy
+import errno
 import os
 import os.path as osp
 
@@ -93,7 +94,7 @@ class ParameterSet(object):
                 "transforms": [],
             }
 
-    def write(self, filename, overwrite=False, failOnOverwrite=True):
+    def write(self, filename, overwrite=False):
         """
             Dump data into filename.
         """
@@ -109,11 +110,7 @@ class ParameterSet(object):
             log.error(
                 "File {} exists and overwrite was not set to True".format(
                     filename))
-            if failOnOverwrite:
-                exit()
-            else:
-                return 1
+            raise OSError(errno.EEXIST)
         else:
             with open(filename, "w") as f:
                 pl.dump(self.data, stream=f)
-                return 0
