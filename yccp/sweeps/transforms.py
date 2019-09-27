@@ -9,11 +9,10 @@ from .. import meta as _m
 from .. import utils as _u
 
 
-class Transform(object):
+class Transform(object, metaclass=_m.InheritDefaults):
     """
         Transform a single parameter set.
     """
-    __metaclass__ = _m.InheritDefaults
 
     default_parameters = {}
 
@@ -220,7 +219,7 @@ class ApplyFunctionElaborate(AddValue):
 
     def get_orig_value(self, paramset):
         self.orig_values = {}
-        for local_key, yaml_key in self.prms['dict'].iteritems():
+        for local_key, yaml_key in self.prms['dict'].items():
             self.orig_values[local_key] = _u.get_recursive(
                 paramset.data,
                 yaml_key)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # encoding: utf-8
 
 """
@@ -29,8 +29,8 @@ except ImportError:
 # tags #
 ########
 yccp_tags = {
-    "eval": [u"!eval", u"!ee"],
-    "get":  [u"!get",  u"!cc"],
+    "eval": ["!eval", "!ee"],
+    "get":  ["!get",  "!cc"],
 }
 # "__prelude__" used to be called "cache" → keep it for backwards compatability
 default_prelude_attr = ["__prelude__", "cache"]
@@ -49,7 +49,7 @@ class RawExpression(object):
         self.expression = expression
 
     def dump(self, dumper):
-        return dumper.represent_scalar(u"!eval", self.expression)
+        return dumper.represent_scalar("!eval", self.expression)
 
 
 class RawPreludeEntry(object):
@@ -62,7 +62,7 @@ class RawPreludeEntry(object):
         self.expression = expression
 
     def dump(self, dumper):
-        return dumper.represent_scalar(u"!get", self.expression)
+        return dumper.represent_scalar("!get", self.expression)
 
 
 class ExpressionEvaluatorWithPrelude(object):
@@ -109,7 +109,7 @@ class ExpressionEvaluatorWithPrelude(object):
     def eval(self, value):
         if isinstance(value, (RawExpression, RawPreludeEntry)):
             value = value.expression
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             return value
         eval_globals = {"np": np}
         eval_locals = {
@@ -138,7 +138,7 @@ evaluate_expression = ExpressionEvaluatorWithPrelude()
 
 
 # Constructors
-for k, v in yccp_tags.items():
+for k, v in list(yccp_tags.items()):
     for tag in v:
         yaml.add_constructor(tag, evaluate_expression, Loader=YccpLoader)
 
@@ -146,8 +146,8 @@ for k, v in yccp_tags.items():
 yaml.add_representer(RawExpression,
                      lambda dumper, re: re.dump(dumper),
                      Dumper=YccpDumper)
-yaml.add_representer(unicode, lambda dumper, value:
-                     dumper.represent_scalar(u'tag:yaml.org,2002:str', value),
+yaml.add_representer(str, lambda dumper, value:
+                     dumper.represent_scalar('tag:yaml.org,2002:str', value),
                      Dumper=YccpDumper)
 
 
@@ -231,7 +231,7 @@ def load_data_with_prelude(obj, name_prelude=default_prelude_attr, **kwargs):
                 "of dictionaries".format(name_prelude_found))
 
         for dct in prelude:
-            for k, v in dct.iteritems():
+            for k, v in dct.items():
                 evaluate_expression.prelude_add(
                     k, evaluate_expression.eval(v))
 

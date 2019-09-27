@@ -68,7 +68,7 @@ parameter-files that are still human-readable afterwards. See the
 
 ## Example
 ```python
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # encoding: utf-8
 
 import os.path as osp
@@ -211,3 +211,8 @@ Options:
 
     -l --last KEY     Sort by KEY last (in order of specification).
 ```
+
+# Requirements:
+* Python 3 just [because](https://pythonclock.org/).
+* [PyYAML](https://github.com/yaml/pyyaml)
+

@@ -1,7 +1,7 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # encoding: utf-8
 
-from __future__ import print_function
+
 
 from docopt import docopt
 from pprint import pprint
@@ -76,12 +76,12 @@ def sort_filename(filenames, first=[], last=[],
     if verbose:
         print(fn_to_nums)
 
-    num_numbers = map(len, fn_to_nums.itervalues())
+    num_numbers = list(map(len, iter(fn_to_nums.values())))
     assert min(num_numbers) == max(num_numbers), "Amount of numbers varies"
 
     key_set = set()
-    for fnk in fn_to_nums.itervalues():
-        key_set.update(fnk.iterkeys())
+    for fnk in fn_to_nums.values():
+        key_set.update(iter(fnk.keys()))
 
     assert len(key_set) == min(num_numbers),\
         "Key values are not the same accross filenames" 

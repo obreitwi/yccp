@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # encoding: utf-8
 
 """
@@ -7,9 +7,6 @@
 """
 
 import collections as c
-import itertools as it
-
-from .. import utils as u
 
 from . import transforms as trans
 
@@ -55,7 +52,7 @@ class Range(object):
         for tr in self.range_tuples:
             p = paramset.copy()
 
-            for t, v in it.izip(self.transforms, tr):
+            for t, v in zip(self.transforms, tr):
                 t.set_value(v)
                 t.apply(p)
 

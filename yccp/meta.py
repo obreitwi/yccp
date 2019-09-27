@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # encoding: utf-8
 #
 """
@@ -98,12 +98,12 @@ class InheritDefaults(type):
                             base.__name__))
                     del to_update[to_delete]
 
-            for k,v in to_update.iteritems():
+            for k,v in to_update.items():
                 if k in all_nonrec_updates:
                     updated_defaults.setdefault(k, {}).update(v)
                 else:
                     updated_defaults[k] = v
-        for k,v in dct.get(mcs.attr_defaults, {}).iteritems():
+        for k,v in dct.get(mcs.attr_defaults, {}).items():
             if k in all_nonrec_updates:
                 updated_defaults.setdefault(k, {}).update(v)
             else:
@@ -167,13 +167,13 @@ def _get_updated_parameters(cls, parameters):
             cls.__name__) + pf(parameters))
     # get a deep-copy of the default parameters to be updated
     prms = copy.deepcopy(getattr(
-        cls, cls.__metaclass__.attr_defaults))
+        cls, cls.__class__.attr_defaults))
 
     not_recursively_updated_attributes = getattr(
-        cls, cls.__metaclass__.attr_nonrec_update, set())
+        cls, cls.__class__.attr_nonrec_update, set())
 
     # update the default parameters with whatever was proved
-    for k, v in copy.deepcopy(parameters).iteritems():
+    for k, v in copy.deepcopy(parameters).items():
         if k in prms:
             if isinstance(v, dict)\
                     and k not in not_recursively_updated_attributes:

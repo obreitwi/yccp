@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # encoding: utf-8
 
 __all__ = [
@@ -128,7 +128,7 @@ def update_dict_recursively(d, u):
     """
         Dictionary d with the contents from u in recursive manner.
     """
-    for k, v in copy.deepcopy(u).iteritems():
+    for k, v in copy.deepcopy(u).items():
         if isinstance(v, c.Mapping):
             if k in d and not isinstance(d.get(k), c.Mapping):
                 raise ValueError(
@@ -155,7 +155,7 @@ def chain_generator_functions(generator_functions):
 
         while len(generators) > 0:
             try:
-                value = generators[-1].next()
+                value = next(generators[-1])
 
                 if len(generators) < len(generator_functions):
                     generators.append(
