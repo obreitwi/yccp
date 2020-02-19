@@ -1,7 +1,6 @@
 # yccp
 
-_Please note: `yccp` is still under active development and not yet considered
-fully stable!_
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3675311.svg)](https://doi.org/10.5281/zenodo.3675311)
 
 **Y**AML with pre-**C**omputed **C**ommon **P**arameters is a library for easy
 parameter-file handling. It allows for simple computations on common parameters
